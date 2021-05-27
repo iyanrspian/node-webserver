@@ -7,21 +7,23 @@ const requestListener = (request, response) => {
     const { method } = request;
 
     if (method === 'GET') {
-        response.end('<h1>Hello</h1>')
+        response.end('<h1>Hello</h1>');
     }
 
     if (method === 'POST') {
-        response.end('<h1>Hai</h1>')
-    }
+        let body = [];
 
-    if (method === 'PUT') {
-        response.end('<h1>Ohayou</h1>')
-    }
+        request.on('data', (chunk) => {
+            body.push(chunk);
+        });
 
-    if (method === 'DELETE') {
-        response.end('<h1>Punten</h1>')
+        request.on('end', () => {
+            body = Buffer.concat(body).toString();
+            const { name } = JSON.parse(body);
+            response.end(`<h1>Hai, ${name}</h1>`);
+        });
     }
-}
+};
 
 const server = http.createServer(requestListener);
 
